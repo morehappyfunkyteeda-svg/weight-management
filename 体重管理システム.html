@@ -424,7 +424,7 @@ tbody tr:hover td { background: #f4f8fd; }
 // ============================================================
 // Google Apps Script URL（データ保存先）
 // ============================================================
-const API_URL = 'https://script.google.com/macros/s/AKfycbwUS2U2RK6hV6a24Ur5PrvGKCp5g2Vyk-p0oSiMQ-J6SR88rLPS5Zmzodc4ohJe-vM4AA/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbwbtOJNbFaCztsHiDS1OP5WIbT7LaMeK7X1DYLEOddp_sEeUFs0rNrA0hHx1-Wi67if/exec';
 
 // ============================================================
 // データ（メモリ上）
@@ -452,13 +452,9 @@ async function apiGet() {
 }
 
 async function apiPost(payload) {
-  await fetch(API_URL, {
-    method:  'POST',
-    mode:    'no-cors',
-    headers: { 'Content-Type': 'text/plain' },
-    body:    JSON.stringify(payload)
-  });
-  return { success: true };
+  const url = API_URL + '?payload=' + encodeURIComponent(JSON.stringify(payload));
+  const res = await fetch(url);
+  return res.json();
 }
 
 // ============================================================
