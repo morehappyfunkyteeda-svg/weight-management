@@ -482,8 +482,19 @@ async function reloadData() {
 // 和暦変換
 // ============================================================
 function toWareki(dateStr) {
-  if (!dateStr) return '';
-  const d = new Date(dateStr + 'T00:00:00');
+  if (!dateStr || dateStr === '0' || dateStr === 'undefined' || dateStr === 'null') return '';
+  const str = String(dateStr).trim();
+  let d;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
+    const [y, m, day] = str.split('-').map(Number);
+    d = new Date(y, m - 1, day);
+  } else if (/^\d{4}\/\d{2}\/\d{2}$/.test(str)) {
+    const [y, m, day] = str.split('/').map(Number);
+    d = new Date(y, m - 1, day);
+  } else {
+    d = new Date(str);
+  }
+  if (!d || isNaN(d.getTime())) return '';
   const y = d.getFullYear(), m = d.getMonth() + 1, day = d.getDate();
   if (d >= new Date('2019-05-01')) { const wy = y-2018; return '令和'+(wy===1?'元':wy)+'年'+m+'月'+day+'日'; }
   if (d >= new Date('1989-01-08')) { const wy = y-1988; return '平成'+(wy===1?'元':wy)+'年'+m+'月'+day+'日'; }
