@@ -19,6 +19,18 @@ header {
 }
 header .logo { font-size: 1.6rem; }
 header h1 { font-size: 1.25rem; letter-spacing: 0.05em; }
+header .sync-btn {
+  margin-left: auto;
+  background: rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.4);
+  color: white;
+  padding: 6px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-family: inherit;
+}
+header .sync-btn:hover { background: rgba(255,255,255,0.3); }
 
 nav {
   background: #1a3f5e;
@@ -41,6 +53,29 @@ nav button {
 }
 nav button:hover { color: #fff; background: rgba(255,255,255,0.08); }
 nav button.active { color: #fff; border-bottom-color: #5bc4f5; background: rgba(255,255,255,0.12); }
+
+/* ローディング */
+#loading-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.35);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 16px;
+}
+#loading-overlay.show { display: flex; }
+.spinner {
+  width: 48px; height: 48px;
+  border: 5px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+#loading-overlay p { color: #fff; font-size: 1rem; }
 
 main { max-width: 960px; margin: 24px auto; padding: 0 16px 40px; }
 
@@ -69,7 +104,6 @@ main { max-width: 960px; margin: 24px auto; padding: 0 16px 40px; }
   color: #555;
   margin-bottom: 5px;
   font-weight: bold;
-  letter-spacing: 0.03em;
 }
 .form-group input,
 .form-group select {
@@ -80,7 +114,7 @@ main { max-width: 960px; margin: 24px auto; padding: 0 16px 40px; }
   font-size: 0.95rem;
   font-family: inherit;
   background: #fafcff;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color 0.2s;
 }
 .form-group input:focus,
 .form-group select:focus {
@@ -89,13 +123,7 @@ main { max-width: 960px; margin: 24px auto; padding: 0 16px 40px; }
   box-shadow: 0 0 0 3px rgba(44,122,184,0.18);
   background: #fff;
 }
-.wareki-label {
-  font-size: 0.8rem;
-  color: #2c7ab8;
-  margin-top: 4px;
-  min-height: 18px;
-  font-weight: bold;
-}
+.wareki-label { font-size: 0.8rem; color: #2c7ab8; margin-top: 4px; min-height: 18px; font-weight: bold; }
 
 .btn {
   display: inline-flex;
@@ -109,46 +137,29 @@ main { max-width: 960px; margin: 24px auto; padding: 0 16px 40px; }
   font-family: inherit;
   font-weight: bold;
   transition: all 0.2s;
-  text-decoration: none;
 }
-.btn-primary { background: #2c7ab8; color: #fff; }
-.btn-primary:hover { background: #1e5f94; }
-.btn-success { background: #27a558; color: #fff; }
-.btn-success:hover { background: #1e8044; }
-.btn-danger { background: #d94040; color: #fff; }
-.btn-danger:hover { background: #b03030; }
+.btn-primary   { background: #2c7ab8; color: #fff; }
+.btn-primary:hover   { background: #1e5f94; }
+.btn-success   { background: #27a558; color: #fff; }
+.btn-success:hover   { background: #1e8044; }
+.btn-danger    { background: #d94040; color: #fff; }
+.btn-danger:hover    { background: #b03030; }
 .btn-secondary { background: #6b7a8d; color: #fff; }
 .btn-secondary:hover { background: #525e6d; }
-.btn-warning { background: #e88a00; color: #fff; }
-.btn-warning:hover { background: #c07000; }
+.btn-warning   { background: #e88a00; color: #fff; }
+.btn-warning:hover   { background: #c07000; }
 .btn-sm { padding: 5px 13px; font-size: 0.82rem; }
-
 .btn-group { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
 
 table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-th {
-  background: #e8f0f8;
-  color: #1e4a6e;
-  padding: 9px 11px;
-  text-align: left;
-  font-weight: bold;
-  font-size: 0.85rem;
-  border-bottom: 2px solid #c0d4e8;
-}
+th { background: #e8f0f8; color: #1e4a6e; padding: 9px 11px; text-align: left; font-weight: bold; font-size: 0.85rem; border-bottom: 2px solid #c0d4e8; }
 td { padding: 9px 11px; border-bottom: 1px solid #edf2f7; vertical-align: middle; }
 tr:last-child td { border-bottom: none; }
 tbody tr:hover td { background: #f4f8fd; }
 
-.search-bar {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 16px;
-  flex-wrap: wrap;
-  align-items: center;
-}
+.search-bar { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
 .search-bar input {
-  flex: 1;
-  min-width: 180px;
+  flex: 1; min-width: 180px;
   padding: 9px 14px;
   border: 1.5px solid #c8d8e8;
   border-radius: 6px;
@@ -156,44 +167,18 @@ tbody tr:hover td { background: #f4f8fd; }
   font-family: inherit;
   background: #fafcff;
 }
-.search-bar input:focus {
-  outline: none;
-  border-color: #2c7ab8;
-  box-shadow: 0 0 0 3px rgba(44,122,184,0.18);
-}
+.search-bar input:focus { outline: none; border-color: #2c7ab8; }
 
-.back-bar {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
-  flex-wrap: wrap;
-}
-.back-bar .page-title {
-  font-size: 1rem;
-  font-weight: bold;
-  color: #1e4a6e;
-}
+.back-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+.back-bar .page-title { font-size: 1rem; font-weight: bold; color: #1e4a6e; }
 
-.badge {
-  display: inline-block;
-  padding: 2px 9px;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: bold;
-  margin-right: 4px;
-}
+.badge { display: inline-block; padding: 2px 9px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; margin-right: 4px; }
 .badge-1f { background: #d4edda; color: #155724; }
 .badge-2f { background: #cce5ff; color: #004085; }
 .badge-3f { background: #fff3cd; color: #7d5a00; }
 .badge-4f { background: #f8d7da; color: #721c24; }
 
-.empty-msg {
-  text-align: center;
-  color: #aab;
-  padding: 36px;
-  font-size: 0.95rem;
-}
+.empty-msg { text-align: center; color: #aab; padding: 36px; font-size: 0.95rem; }
 
 .diff-up   { color: #d94040; font-weight: bold; }
 .diff-down { color: #27a558; font-weight: bold; }
@@ -201,52 +186,22 @@ tbody tr:hover td { background: #f4f8fd; }
 
 .period-btns { display: flex; gap: 8px; margin-bottom: 16px; }
 .period-btn { padding: 6px 18px; border-radius: 20px; font-size: 0.88rem; cursor: pointer; border: 2px solid #2c7ab8; background: #fff; color: #2c7ab8; font-family: inherit; font-weight: bold; transition: all 0.2s; }
-.period-btn.active { background: #2c7ab8; color: #fff; }
-.period-btn:hover { background: #2c7ab8; color: #fff; }
+.period-btn.active, .period-btn:hover { background: #2c7ab8; color: #fff; }
 
-canvas { display: block; max-width: 100%; }
+.filter-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; background: #f0f6ff; padding: 12px 14px; border-radius: 8px; }
+.filter-bar label { font-size: 0.85rem; font-weight: bold; color: #1e4a6e; }
+.filter-bar select { padding: 6px 10px; border: 1.5px solid #b0c8e0; border-radius: 5px; font-size: 0.9rem; font-family: inherit; background: #fff; }
+
+.alert { padding: 10px 16px; border-radius: 6px; margin-bottom: 14px; font-size: 0.9rem; }
+.alert-success { background: #d4edda; color: #155724; border-left: 4px solid #27a558; }
+.alert-error   { background: #f8d7da; color: #721c24; border-left: 4px solid #d94040; }
+
+.legend-dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
 
 .section { display: none; }
 .section.active { display: block; }
 .subview { display: none; }
 .subview.active { display: block; }
-
-.filter-bar {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-bottom: 16px;
-  background: #f0f6ff;
-  padding: 12px 14px;
-  border-radius: 8px;
-}
-.filter-bar label { font-size: 0.85rem; font-weight: bold; color: #1e4a6e; }
-.filter-bar select {
-  padding: 6px 10px;
-  border: 1.5px solid #b0c8e0;
-  border-radius: 5px;
-  font-size: 0.9rem;
-  font-family: inherit;
-  background: #fff;
-}
-
-.alert {
-  padding: 10px 16px;
-  border-radius: 6px;
-  margin-bottom: 14px;
-  font-size: 0.9rem;
-}
-.alert-success { background: #d4edda; color: #155724; border-left: 4px solid #27a558; }
-.alert-info    { background: #d1ecf1; color: #0c5460; border-left: 4px solid #17a2b8; }
-
-.legend-dot {
-  display: inline-block;
-  width: 12px; height: 12px;
-  border-radius: 50%;
-  margin-right: 4px;
-  vertical-align: middle;
-}
 
 @media (max-width: 600px) {
   header h1 { font-size: 1rem; }
@@ -259,9 +214,16 @@ canvas { display: block; max-width: 100%; }
 </head>
 <body>
 
+<!-- ローディング -->
+<div id="loading-overlay">
+  <div class="spinner"></div>
+  <p id="loading-msg">データを読み込み中...</p>
+</div>
+
 <header>
   <div class="logo">🏥</div>
   <h1>体重管理システム</h1>
+  <button class="sync-btn" onclick="reloadData()">🔄 最新データに更新</button>
 </header>
 
 <nav>
@@ -274,7 +236,6 @@ canvas { display: block; max-width: 100%; }
 
 <!-- ========== 管理画面 ========== -->
 <div id="section-kanri" class="section active">
-
   <div id="kanri-list" class="subview active">
     <div class="card">
       <h2>👤 利用者管理</h2>
@@ -283,16 +244,7 @@ canvas { display: block; max-width: 100%; }
         <button class="btn btn-primary" onclick="showKanriForm(null)">＋ 新規登録</button>
       </div>
       <table>
-        <thead>
-          <tr>
-            <th>居室番号</th>
-            <th>氏名（漢字）</th>
-            <th>ふりがな</th>
-            <th>開始日</th>
-            <th>終了日</th>
-            <th>操作</th>
-          </tr>
-        </thead>
+        <thead><tr><th>居室番号</th><th>氏名（漢字）</th><th>ふりがな</th><th>開始日</th><th>終了日</th><th>操作</th></tr></thead>
         <tbody id="resident-list-body"></tbody>
       </table>
     </div>
@@ -361,12 +313,10 @@ canvas { display: block; max-width: 100%; }
       </div>
     </div>
   </div>
-
 </div>
 
 <!-- ========== 体重入力画面 ========== -->
 <div id="section-input" class="section">
-
   <div id="input-select" class="subview active">
     <div class="card">
       <h2>⚖️ 体重入力 ─ 利用者を選んでください</h2>
@@ -374,9 +324,7 @@ canvas { display: block; max-width: 100%; }
         <input type="text" id="input-search" placeholder="氏名・ふりがな・居室番号で検索..." oninput="renderInputResidentList()">
       </div>
       <table>
-        <thead>
-          <tr><th>居室番号</th><th>氏名（漢字）</th><th>ふりがな</th><th></th></tr>
-        </thead>
+        <thead><tr><th>居室番号</th><th>氏名（漢字）</th><th>ふりがな</th><th></th></tr></thead>
         <tbody id="input-resident-list"></tbody>
       </table>
     </div>
@@ -408,19 +356,15 @@ canvas { display: block; max-width: 100%; }
     <div class="card">
       <h2>最近の体重記録（直近10件）</h2>
       <table>
-        <thead>
-          <tr><th>入力日（和暦）</th><th>体重 (kg)</th><th>操作</th></tr>
-        </thead>
+        <thead><tr><th>入力日（和暦）</th><th>体重 (kg)</th><th>操作</th></tr></thead>
         <tbody id="recent-weights"></tbody>
       </table>
     </div>
   </div>
-
 </div>
 
 <!-- ========== 確認・グラフ画面 ========== -->
 <div id="section-kakunin" class="section">
-
   <div id="kakunin-select" class="subview active">
     <div class="card">
       <h2>📊 確認・グラフ ─ 利用者を選んでください</h2>
@@ -428,9 +372,7 @@ canvas { display: block; max-width: 100%; }
         <input type="text" id="kakunin-search" placeholder="氏名・ふりがな・居室番号で検索..." oninput="renderKakuninResidentList()">
       </div>
       <table>
-        <thead>
-          <tr><th>居室番号</th><th>氏名（漢字）</th><th>ふりがな</th><th></th></tr>
-        </thead>
+        <thead><tr><th>居室番号</th><th>氏名（漢字）</th><th>ふりがな</th><th></th></tr></thead>
         <tbody id="kakunin-resident-list"></tbody>
       </table>
     </div>
@@ -451,14 +393,7 @@ canvas { display: block; max-width: 100%; }
         <button class="btn btn-secondary btn-sm" onclick="showAllWeights()">全期間表示</button>
       </div>
       <table>
-        <thead>
-          <tr>
-            <th>入力日（和暦）</th>
-            <th>体重 (kg)</th>
-            <th>前月比</th>
-            <th>翌月比</th>
-          </tr>
-        </thead>
+        <thead><tr><th>入力日（和暦）</th><th>体重 (kg)</th><th>前月比</th><th>翌月比</th></tr></thead>
         <tbody id="weight-detail-body"></tbody>
       </table>
     </div>
@@ -470,38 +405,80 @@ canvas { display: block; max-width: 100%; }
       <span class="page-title" id="graph-title"></span>
     </div>
     <div class="card">
-      <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
         <div class="period-btns">
           <button class="period-btn active" id="btn-6m" onclick="setGraphPeriod(6)">過去6ヶ月</button>
           <button class="period-btn" id="btn-12m" onclick="setGraphPeriod(12)">過去1年</button>
         </div>
-        <div style="font-size:0.8rem;color:#888;">
-          <span class="legend-dot" style="background:#2c7ab8;"></span>体重 (kg)
-        </div>
+        <div style="font-size:0.8rem;color:#888;"><span class="legend-dot" style="background:#2c7ab8;"></span>体重 (kg)</div>
       </div>
-      <div style="position:relative;">
-        <canvas id="weight-chart"></canvas>
-        <div id="graph-no-data" class="empty-msg" style="display:none;">この期間のデータがありません</div>
-      </div>
+      <canvas id="weight-chart"></canvas>
+      <div id="graph-no-data" class="empty-msg" style="display:none;">この期間のデータがありません</div>
     </div>
   </div>
-
 </div>
+
 </main>
 
 <script>
 // ============================================================
-// データ管理（localStorage）
+// Google Apps Script URL（データ保存先）
 // ============================================================
-let residents     = JSON.parse(localStorage.getItem('wm_residents')     || '[]');
-let weightRecords = JSON.parse(localStorage.getItem('wm_weightRecords') || '[]');
+const API_URL = 'https://script.google.com/macros/s/AKfycbwUS2U2RK6hV6a24Ur5PrvGKCp5g2Vyk-p0oSiMQ-J6SR88rLPS5Zmzodc4ohJe-vM4AA/exec';
 
-function saveData() {
-  localStorage.setItem('wm_residents',     JSON.stringify(residents));
-  localStorage.setItem('wm_weightRecords', JSON.stringify(weightRecords));
+// ============================================================
+// データ（メモリ上）
+// ============================================================
+let residents     = [];
+let weightRecords = [];
+
+// ============================================================
+// ローディング表示
+// ============================================================
+function showLoading(msg) {
+  document.getElementById('loading-msg').textContent = msg || 'データを処理中...';
+  document.getElementById('loading-overlay').classList.add('show');
 }
-function genId() {
-  return Date.now().toString(36) + Math.random().toString(36).substr(2, 6);
+function hideLoading() {
+  document.getElementById('loading-overlay').classList.remove('show');
+}
+
+// ============================================================
+// API通信
+// ============================================================
+async function apiGet() {
+  const res  = await fetch(API_URL);
+  return res.json();
+}
+
+async function apiPost(payload) {
+  const res = await fetch(API_URL, {
+    method:  'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body:    JSON.stringify(payload)
+  });
+  return res.json();
+}
+
+// ============================================================
+// データ読み込み
+// ============================================================
+async function loadData() {
+  showLoading('データを読み込み中...');
+  try {
+    const data    = await apiGet();
+    residents     = data.residents     || [];
+    weightRecords = data.weightRecords || [];
+  } catch(e) {
+    alert('データの読み込みに失敗しました。ページを再読み込みしてください。');
+  }
+  hideLoading();
+  renderResidentList();
+}
+
+async function reloadData() {
+  await loadData();
+  alert('最新データに更新しました！');
 }
 
 // ============================================================
@@ -511,61 +488,42 @@ function toWareki(dateStr) {
   if (!dateStr) return '';
   const d = new Date(dateStr + 'T00:00:00');
   const y = d.getFullYear(), m = d.getMonth() + 1, day = d.getDate();
-  if (d >= new Date('2019-05-01')) {
-    const wy = y - 2018;
-    return '令和' + (wy === 1 ? '元' : wy) + '年' + m + '月' + day + '日';
-  }
-  if (d >= new Date('1989-01-08')) {
-    const wy = y - 1988;
-    return '平成' + (wy === 1 ? '元' : wy) + '年' + m + '月' + day + '日';
-  }
-  if (d >= new Date('1926-12-25')) {
-    const wy = y - 1925;
-    return '昭和' + (wy === 1 ? '元' : wy) + '年' + m + '月' + day + '日';
-  }
-  return y + '年' + m + '月' + day + '日';
+  if (d >= new Date('2019-05-01')) { const wy = y-2018; return '令和'+(wy===1?'元':wy)+'年'+m+'月'+day+'日'; }
+  if (d >= new Date('1989-01-08')) { const wy = y-1988; return '平成'+(wy===1?'元':wy)+'年'+m+'月'+day+'日'; }
+  if (d >= new Date('1926-12-25')) { const wy = y-1925; return '昭和'+(wy===1?'元':wy)+'年'+m+'月'+day+'日'; }
+  return y+'年'+m+'月'+day+'日';
 }
-
 function updateWareki(inputId, labelId) {
   const val = document.getElementById(inputId).value;
-  const el  = document.getElementById(labelId);
-  el.textContent = val ? '（' + toWareki(val) + '）' : '';
+  document.getElementById(labelId).textContent = val ? '（'+toWareki(val)+'）' : '';
 }
 
 // ============================================================
-// 画面・サブビュー切り替え
+// 画面切替
 // ============================================================
-const SECTIONS = ['kanri', 'input', 'kakunin'];
-
+const SECTIONS = ['kanri','input','kakunin'];
 function showSection(name) {
-  SECTIONS.forEach(s => {
-    document.getElementById('section-' + s).classList.toggle('active', s === name);
-  });
-  document.querySelectorAll('nav button').forEach((btn, i) => {
-    btn.classList.toggle('active', SECTIONS[i] === name);
-  });
-  if (name === 'kanri')   renderResidentList();
-  if (name === 'input')   { showSubview('input','select'); renderInputResidentList(); }
-  if (name === 'kakunin') { showSubview('kakunin','select'); renderKakuninResidentList(); }
+  SECTIONS.forEach(s => document.getElementById('section-'+s).classList.toggle('active', s===name));
+  document.querySelectorAll('nav button').forEach((btn,i) => btn.classList.toggle('active', SECTIONS[i]===name));
+  if (name==='kanri')   renderResidentList();
+  if (name==='input')   { showSubview('input','select'); renderInputResidentList(); }
+  if (name==='kakunin') { showSubview('kakunin','select'); renderKakuninResidentList(); }
 }
-
 function showSubview(section, view) {
-  const sec = document.getElementById('section-' + section);
-  sec.querySelectorAll('.subview').forEach(sv => {
-    sv.classList.toggle('active', sv.id === section + '-' + view);
+  document.getElementById('section-'+section).querySelectorAll('.subview').forEach(sv => {
+    sv.classList.toggle('active', sv.id === section+'-'+view);
   });
 }
 
-// ============================================================
-// 居室番号バッジ
-// ============================================================
+// 居室バッジ
 function floorBadge(room) {
   const n = parseInt(room);
-  if (n < 200) return '<span class="badge badge-1f">１階</span>';
-  if (n < 300) return '<span class="badge badge-2f">２階</span>';
-  if (n < 400) return '<span class="badge badge-3f">３階</span>';
+  if (n<200) return '<span class="badge badge-1f">１階</span>';
+  if (n<300) return '<span class="badge badge-2f">２階</span>';
+  if (n<400) return '<span class="badge badge-3f">３階</span>';
   return '<span class="badge badge-4f">４階</span>';
 }
+function genId() { return Date.now().toString(36)+Math.random().toString(36).substr(2,6); }
 
 // ============================================================
 // 管理画面
@@ -573,489 +531,263 @@ function floorBadge(room) {
 let editingId = null;
 
 function renderResidentList() {
-  const q    = (document.getElementById('kanri-search').value || '').toLowerCase();
+  const q    = (document.getElementById('kanri-search').value||'').toLowerCase();
   const body = document.getElementById('resident-list-body');
-  let list   = residents.filter(r =>
-    !q ||
-    (r.name     || '').toLowerCase().includes(q) ||
-    (r.furigana || '').toLowerCase().includes(q) ||
-    (r.room     || '').toLowerCase().includes(q)
-  );
-  list.sort((a, b) => (a.room || '').localeCompare(b.room || '', 'ja'));
-
-  if (!list.length) {
-    body.innerHTML = '<tr><td colspan="6" class="empty-msg">利用者が登録されていません</td></tr>';
-    return;
-  }
-  body.innerHTML = list.map(r => `
+  let list   = residents.filter(r => !q||[r.name,r.furigana,r.room].some(v=>(v||'').toLowerCase().includes(q)));
+  list.sort((a,b)=>(a.room||'').localeCompare(b.room||'','ja'));
+  if (!list.length) { body.innerHTML='<tr><td colspan="6" class="empty-msg">利用者が登録されていません</td></tr>'; return; }
+  body.innerHTML = list.map(r=>`
     <tr>
       <td>${floorBadge(r.room)}&nbsp;${r.room}</td>
       <td><strong>${r.name}</strong></td>
       <td>${r.furigana}</td>
-      <td style="font-size:0.85rem;">${toWareki(r.startDate)}</td>
-      <td style="font-size:0.85rem;">${r.endDate ? toWareki(r.endDate) : '─'}</td>
+      <td style="font-size:0.85rem">${toWareki(r.startDate)}</td>
+      <td style="font-size:0.85rem">${r.endDate?toWareki(r.endDate):'─'}</td>
       <td>
-        <button class="btn btn-primary btn-sm" onclick="showKanriForm('${r.id}')">編集</button>
-        &nbsp;
+        <button class="btn btn-primary btn-sm" onclick="showKanriForm('${r.id}')">編集</button>&nbsp;
         <button class="btn btn-danger btn-sm" onclick="deleteResident('${r.id}')">削除</button>
       </td>
-    </tr>
-  `).join('');
+    </tr>`).join('');
 }
 
 function showKanriForm(id) {
   editingId = id;
   document.getElementById('kanri-form-title').textContent = id ? '利用者情報を編集' : '新規登録';
   document.getElementById('kanri-delete-btn').style.display = id ? 'inline-flex' : 'none';
-
   if (id) {
-    const r = residents.find(x => x.id === id);
-    document.getElementById('f-room').value     = r.room      || '';
-    document.getElementById('f-name').value     = r.name      || '';
-    document.getElementById('f-furigana').value = r.furigana  || '';
-    document.getElementById('f-start').value    = r.startDate || '';
-    document.getElementById('f-end').value      = r.endDate   || '';
-    updateWareki('f-start', 'fw-start');
-    updateWareki('f-end',   'fw-end');
+    const r = residents.find(x=>x.id===id);
+    document.getElementById('f-room').value     = r.room||'';
+    document.getElementById('f-name').value     = r.name||'';
+    document.getElementById('f-furigana').value = r.furigana||'';
+    document.getElementById('f-start').value    = r.startDate||'';
+    document.getElementById('f-end').value      = r.endDate||'';
+    updateWareki('f-start','fw-start'); updateWareki('f-end','fw-end');
   } else {
-    ['f-room','f-name','f-furigana','f-start','f-end'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el.tagName === 'SELECT') el.selectedIndex = 0;
-      else el.value = '';
-    });
-    document.getElementById('fw-start').textContent = '';
-    document.getElementById('fw-end').textContent   = '';
+    ['f-name','f-furigana','f-start','f-end'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('f-room').selectedIndex=0;
+    ['fw-start','fw-end'].forEach(id=>document.getElementById(id).textContent='');
   }
-  showSubview('kanri', 'form');
+  showSubview('kanri','form');
 }
 
-function saveResident() {
-  const room      = document.getElementById('f-room').value;
-  const name      = document.getElementById('f-name').value.trim();
-  const furigana  = document.getElementById('f-furigana').value.trim();
-  const startDate = document.getElementById('f-start').value;
-  const endDate   = document.getElementById('f-end').value;
-
-  if (!room || !name || !furigana || !startDate) {
-    alert('居室番号・氏名（漢字）・ふりがな・開始日は必須項目です。');
-    return;
-  }
-  if (editingId) {
-    const idx = residents.findIndex(r => r.id === editingId);
-    residents[idx] = { ...residents[idx], room, name, furigana, startDate, endDate };
-  } else {
-    residents.push({ id: genId(), room, name, furigana, startDate, endDate });
-  }
-  saveData();
-  showSubview('kanri', 'list');
+async function saveResident() {
+  const room=document.getElementById('f-room').value, name=document.getElementById('f-name').value.trim();
+  const furigana=document.getElementById('f-furigana').value.trim(), startDate=document.getElementById('f-start').value;
+  const endDate=document.getElementById('f-end').value;
+  if (!room||!name||!furigana||!startDate) { alert('居室番号・氏名・ふりがな・開始日は必須です。'); return; }
+  const item = { id: editingId||genId(), room, name, furigana, startDate, endDate };
+  showLoading('保存中...');
+  try {
+    await apiPost({ action:'saveResident', item });
+    if (editingId) { const idx=residents.findIndex(r=>r.id===editingId); residents[idx]=item; }
+    else residents.push(item);
+  } catch(e) { alert('保存に失敗しました。'); }
+  hideLoading();
+  showSubview('kanri','list');
   renderResidentList();
 }
 
-function deleteResidentCurrent() {
-  if (editingId) deleteResident(editingId, true);
-}
+function deleteResidentCurrent() { if (editingId) deleteResident(editingId); }
 
-function deleteResident(id, fromForm) {
-  const r = residents.find(x => x.id === id);
-  if (!confirm('「' + r.name + '」さんのデータを削除しますか？\n体重記録もすべて削除されます。')) return;
-  residents     = residents.filter(x => x.id !== id);
-  weightRecords = weightRecords.filter(x => x.residentId !== id);
-  saveData();
-  showSubview('kanri', 'list');
+async function deleteResident(id) {
+  const r = residents.find(x=>x.id===id);
+  if (!confirm('「'+r.name+'」さんを削除しますか？\n体重記録もすべて削除されます。')) return;
+  showLoading('削除中...');
+  try {
+    await apiPost({ action:'deleteResident', id });
+    residents     = residents.filter(x=>x.id!==id);
+    weightRecords = weightRecords.filter(x=>x.residentId!==id);
+  } catch(e) { alert('削除に失敗しました。'); }
+  hideLoading();
+  showSubview('kanri','list');
   renderResidentList();
 }
 
 // ============================================================
-// 体重入力画面
+// 体重入力
 // ============================================================
 let inputResidentId = null;
 
 function renderInputResidentList() {
-  const q    = (document.getElementById('input-search').value || '').toLowerCase();
-  const body = document.getElementById('input-resident-list');
-  let list   = residents.filter(r =>
-    !q ||
-    (r.name     || '').toLowerCase().includes(q) ||
-    (r.furigana || '').toLowerCase().includes(q) ||
-    (r.room     || '').toLowerCase().includes(q)
-  );
-  list.sort((a, b) => (a.room || '').localeCompare(b.room || '', 'ja'));
-
-  if (!list.length) {
-    body.innerHTML = '<tr><td colspan="4" class="empty-msg">利用者が登録されていません</td></tr>';
-    return;
-  }
-  body.innerHTML = list.map(r => `
+  const q=( document.getElementById('input-search').value||'').toLowerCase();
+  const body=document.getElementById('input-resident-list');
+  let list=residents.filter(r=>!q||[r.name,r.furigana,r.room].some(v=>(v||'').toLowerCase().includes(q)));
+  list.sort((a,b)=>(a.room||'').localeCompare(b.room||'','ja'));
+  if (!list.length) { body.innerHTML='<tr><td colspan="4" class="empty-msg">利用者が登録されていません</td></tr>'; return; }
+  body.innerHTML=list.map(r=>`
     <tr>
       <td>${floorBadge(r.room)}&nbsp;${r.room}</td>
       <td><strong>${r.name}</strong></td>
       <td>${r.furigana}</td>
       <td><button class="btn btn-primary btn-sm" onclick="selectResidentForInput('${r.id}')">選択</button></td>
-    </tr>
-  `).join('');
+    </tr>`).join('');
 }
 
 function selectResidentForInput(id) {
-  inputResidentId = id;
-  const r = residents.find(x => x.id === id);
-  document.getElementById('input-form-title').textContent =
-    floorBadge(r.room) + ' ' + r.room + '　' + r.name + ' さん';
-
-  const today = new Date().toISOString().split('T')[0];
-  document.getElementById('w-date').value   = today;
-  document.getElementById('w-weight').value = '';
-  updateWareki('w-date', 'ww-date');
-  document.getElementById('input-success-msg').style.display = 'none';
-
+  inputResidentId=id;
+  const r=residents.find(x=>x.id===id);
+  document.getElementById('input-form-title').textContent=r.room+'　'+r.name+' さん';
+  const today=new Date().toISOString().split('T')[0];
+  document.getElementById('w-date').value=today;
+  document.getElementById('w-weight').value='';
+  updateWareki('w-date','ww-date');
+  document.getElementById('input-success-msg').style.display='none';
   renderRecentWeights();
-  showSubview('input', 'form');
+  showSubview('input','form');
 }
 
 function renderRecentWeights() {
-  const records = weightRecords
-    .filter(w => w.residentId === inputResidentId)
-    .sort((a, b) => b.date.localeCompare(a.date))
-    .slice(0, 10);
-  const body = document.getElementById('recent-weights');
-
-  if (!records.length) {
-    body.innerHTML = '<tr><td colspan="3" class="empty-msg">記録がありません</td></tr>';
-    return;
-  }
-  body.innerHTML = records.map(w => `
+  const records=weightRecords.filter(w=>w.residentId===inputResidentId).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,10);
+  const body=document.getElementById('recent-weights');
+  if (!records.length) { body.innerHTML='<tr><td colspan="3" class="empty-msg">記録がありません</td></tr>'; return; }
+  body.innerHTML=records.map(w=>`
     <tr>
       <td>${toWareki(w.date)}</td>
       <td><strong>${w.weight}</strong> kg</td>
       <td><button class="btn btn-danger btn-sm" onclick="deleteWeight('${w.id}')">削除</button></td>
-    </tr>
-  `).join('');
+    </tr>`).join('');
 }
 
-function saveWeight() {
-  const date   = document.getElementById('w-date').value;
-  const weight = parseFloat(document.getElementById('w-weight').value);
-
-  if (!date || isNaN(weight) || weight <= 0) {
-    alert('入力日と体重（kg）を正しく入力してください。');
-    return;
-  }
-  weightRecords.push({ id: genId(), residentId: inputResidentId, date, weight });
-  saveData();
-  document.getElementById('w-weight').value = '';
-
-  const msg = document.getElementById('input-success-msg');
-  msg.style.display = 'block';
-  setTimeout(() => { msg.style.display = 'none'; }, 3000);
-
-  renderRecentWeights();
+async function saveWeight() {
+  const date=document.getElementById('w-date').value, weight=parseFloat(document.getElementById('w-weight').value);
+  if (!date||isNaN(weight)||weight<=0) { alert('入力日と体重を正しく入力してください。'); return; }
+  const item={id:genId(), residentId:inputResidentId, date, weight};
+  showLoading('登録中...');
+  try {
+    await apiPost({action:'saveWeight', item});
+    weightRecords.push(item);
+    document.getElementById('w-weight').value='';
+    const msg=document.getElementById('input-success-msg');
+    msg.style.display='block'; setTimeout(()=>msg.style.display='none',3000);
+    renderRecentWeights();
+  } catch(e) { alert('登録に失敗しました。'); }
+  hideLoading();
 }
 
-function deleteWeight(id) {
+async function deleteWeight(id) {
   if (!confirm('この記録を削除しますか？')) return;
-  weightRecords = weightRecords.filter(w => w.id !== id);
-  saveData();
-  renderRecentWeights();
+  showLoading('削除中...');
+  try {
+    await apiPost({action:'deleteWeight', id});
+    weightRecords=weightRecords.filter(w=>w.id!==id);
+    renderRecentWeights();
+  } catch(e) { alert('削除に失敗しました。'); }
+  hideLoading();
 }
 
 // ============================================================
 // 確認画面
 // ============================================================
-let kakuninResidentId = null;
-let showAll = false;
+let kakuninResidentId=null, showAll=false;
 
 function renderKakuninResidentList() {
-  const q    = (document.getElementById('kakunin-search').value || '').toLowerCase();
-  const body = document.getElementById('kakunin-resident-list');
-  let list   = residents.filter(r =>
-    !q ||
-    (r.name     || '').toLowerCase().includes(q) ||
-    (r.furigana || '').toLowerCase().includes(q) ||
-    (r.room     || '').toLowerCase().includes(q)
-  );
-  list.sort((a, b) => (a.room || '').localeCompare(b.room || '', 'ja'));
-
-  if (!list.length) {
-    body.innerHTML = '<tr><td colspan="4" class="empty-msg">利用者が登録されていません</td></tr>';
-    return;
-  }
-  body.innerHTML = list.map(r => `
+  const q=(document.getElementById('kakunin-search').value||'').toLowerCase();
+  const body=document.getElementById('kakunin-resident-list');
+  let list=residents.filter(r=>!q||[r.name,r.furigana,r.room].some(v=>(v||'').toLowerCase().includes(q)));
+  list.sort((a,b)=>(a.room||'').localeCompare(b.room||'','ja'));
+  if (!list.length) { body.innerHTML='<tr><td colspan="4" class="empty-msg">利用者が登録されていません</td></tr>'; return; }
+  body.innerHTML=list.map(r=>`
     <tr>
       <td>${floorBadge(r.room)}&nbsp;${r.room}</td>
       <td><strong>${r.name}</strong></td>
       <td>${r.furigana}</td>
       <td><button class="btn btn-warning btn-sm" onclick="selectResidentForKakunin('${r.id}')">確認する</button></td>
-    </tr>
-  `).join('');
+    </tr>`).join('');
 }
 
 function selectResidentForKakunin(id) {
-  kakuninResidentId = id;
-  const r = residents.find(x => x.id === id);
-  const label = r.room + '　' + r.name + ' さん';
-  document.getElementById('kakunin-detail-title').textContent = label;
-  document.getElementById('graph-title').textContent          = '📈 ' + label;
-
-  showAll = false;
-  initMonthFilter();
-  renderWeightDetail();
-  showSubview('kakunin', 'detail');
+  kakuninResidentId=id;
+  const r=residents.find(x=>x.id===id);
+  const label=r.room+'　'+r.name+' さん';
+  document.getElementById('kakunin-detail-title').textContent=label;
+  document.getElementById('graph-title').textContent='📈 '+label;
+  showAll=false; initMonthFilter(); renderWeightDetail();
+  showSubview('kakunin','detail');
 }
 
 function initMonthFilter() {
-  const now  = new Date();
-  const ySel = document.getElementById('k-year');
-  const mSel = document.getElementById('k-month');
-
-  ySel.innerHTML = '';
-  for (let y = now.getFullYear(); y >= now.getFullYear() - 5; y--) {
-    ySel.innerHTML += '<option value="' + y + '">' + y + '年</option>';
-  }
-  mSel.innerHTML = '';
-  for (let m = 1; m <= 12; m++) {
-    mSel.innerHTML += '<option value="' + m + '"' + (m === now.getMonth() + 1 ? ' selected' : '') + '>' + m + '月</option>';
-  }
+  const now=new Date(), ySel=document.getElementById('k-year'), mSel=document.getElementById('k-month');
+  ySel.innerHTML='';
+  for(let y=now.getFullYear();y>=now.getFullYear()-5;y--) ySel.innerHTML+='<option value="'+y+'">'+y+'年</option>';
+  mSel.innerHTML='';
+  for(let m=1;m<=12;m++) mSel.innerHTML+='<option value="'+m+'"'+(m===now.getMonth()+1?' selected':'')+'>'+m+'月</option>';
 }
-
-function showAllWeights() {
-  showAll = true;
-  renderWeightDetail();
-}
+function showAllWeights() { showAll=true; renderWeightDetail(); }
 
 function renderWeightDetail() {
-  if (!showAll) {
-    const year  = parseInt(document.getElementById('k-year').value);
-    const month = parseInt(document.getElementById('k-month').value);
-    _renderDetail(year, month);
-  } else {
-    _renderDetail(null, null);
-  }
-}
-
-function _renderDetail(filterYear, filterMonth) {
-  // 全記録（日付順）
-  const allRecords = weightRecords
-    .filter(w => w.residentId === kakuninResidentId)
-    .sort((a, b) => a.date.localeCompare(b.date));
-
-  // 月ごとの平均体重マップ（前月比・翌月比計算用）
-  const monthlyMap = {};
-  allRecords.forEach(w => {
-    const [y, m] = w.date.split('-').map(Number);
-    const key = y + '-' + String(m).padStart(2, '0');
-    if (!monthlyMap[key]) monthlyMap[key] = [];
-    monthlyMap[key].push(w.weight);
-  });
-  const monthlyAvg = {};
-  Object.keys(monthlyMap).forEach(k => {
-    const vals = monthlyMap[k];
-    monthlyAvg[k] = vals.reduce((s, v) => s + v, 0) / vals.length;
-  });
-
-  // 表示レコードを絞り込む
-  const displayed = filterYear !== null
-    ? allRecords.filter(w => {
-        const [y, m] = w.date.split('-').map(Number);
-        return y === filterYear && m === filterMonth;
-      })
-    : allRecords;
-
-  const body = document.getElementById('weight-detail-body');
-  if (!displayed.length) {
-    body.innerHTML = '<tr><td colspan="4" class="empty-msg">この期間のデータがありません</td></tr>';
-    return;
-  }
-
-  body.innerHTML = displayed.map(w => {
-    const [y, m] = w.date.split('-').map(Number);
-    const curKey  = y + '-' + String(m).padStart(2, '0');
-    const pm = m === 1 ? 12 : m - 1;
-    const py = m === 1 ? y - 1 : y;
-    const prevKey = py + '-' + String(pm).padStart(2, '0');
-    const nm = m === 12 ? 1 : m + 1;
-    const ny = m === 12 ? y + 1 : y;
-    const nextKey = ny + '-' + String(nm).padStart(2, '0');
-
-    const curAvg  = monthlyAvg[curKey];
-    const prevAvg = monthlyAvg[prevKey];
-    const nextAvg = monthlyAvg[nextKey];
-
-    const fmtDiff = (from, to) => {
-      if (from === undefined || to === undefined) return '<span class="diff-none">─</span>';
-      const d = (to - from).toFixed(1);
-      const cls = d > 0 ? 'diff-up' : d < 0 ? 'diff-down' : 'diff-none';
-      return '<span class="' + cls + '">' + (d > 0 ? '+' : '') + d + ' kg</span>';
-    };
-
-    return `
-      <tr>
-        <td>${toWareki(w.date)}</td>
-        <td><strong>${w.weight}</strong> kg</td>
-        <td>${fmtDiff(prevAvg, curAvg)}</td>
-        <td>${fmtDiff(curAvg, nextAvg)}</td>
-      </tr>
-    `;
+  showAll=false;
+  const year=parseInt(document.getElementById('k-year').value), month=parseInt(document.getElementById('k-month').value);
+  const allRecords=weightRecords.filter(w=>w.residentId===kakuninResidentId).sort((a,b)=>a.date.localeCompare(b.date));
+  const monthlyMap={};
+  allRecords.forEach(w=>{ const [y,m]=w.date.split('-').map(Number); const k=y+'-'+String(m).padStart(2,'0'); if(!monthlyMap[k])monthlyMap[k]=[]; monthlyMap[k].push(parseFloat(w.weight)); });
+  const monthlyAvg={};
+  Object.keys(monthlyMap).forEach(k=>{ const v=monthlyMap[k]; monthlyAvg[k]=v.reduce((s,x)=>s+x,0)/v.length; });
+  const displayed=showAll?allRecords:allRecords.filter(w=>{ const [y,m]=w.date.split('-').map(Number); return y===year&&m===month; });
+  const body=document.getElementById('weight-detail-body');
+  if (!displayed.length) { body.innerHTML='<tr><td colspan="4" class="empty-msg">データがありません</td></tr>'; return; }
+  const fmtDiff=(from,to)=>{
+    if(from===undefined||to===undefined) return '<span class="diff-none">─</span>';
+    const d=(to-from).toFixed(1), cls=d>0?'diff-up':d<0?'diff-down':'diff-none';
+    return '<span class="'+cls+'">'+(d>0?'+':'')+d+' kg</span>';
+  };
+  body.innerHTML=displayed.map(w=>{
+    const [y,m]=w.date.split('-').map(Number);
+    const cur=y+'-'+String(m).padStart(2,'0');
+    const pm=m===1?12:m-1, py=m===1?y-1:y, prev=py+'-'+String(pm).padStart(2,'0');
+    const nm=m===12?1:m+1, ny=m===12?y+1:y, next=ny+'-'+String(nm).padStart(2,'0');
+    return `<tr><td>${toWareki(w.date)}</td><td><strong>${w.weight}</strong> kg</td><td>${fmtDiff(monthlyAvg[prev],monthlyAvg[cur])}</td><td>${fmtDiff(monthlyAvg[cur],monthlyAvg[next])}</td></tr>`;
   }).join('');
 }
 
 // ============================================================
 // グラフ
 // ============================================================
-let graphPeriod = 6;
-
-function showKakuninGraph() {
-  showSubview('kakunin', 'graph');
-  setTimeout(drawGraph, 50);
-}
-
-function setGraphPeriod(months) {
-  graphPeriod = months;
-  document.getElementById('btn-6m').classList.toggle('active', months === 6);
-  document.getElementById('btn-12m').classList.toggle('active', months === 12);
+let graphPeriod=6;
+function showKakuninGraph() { showSubview('kakunin','graph'); setTimeout(drawGraph,50); }
+function setGraphPeriod(m) {
+  graphPeriod=m;
+  document.getElementById('btn-6m').classList.toggle('active',m===6);
+  document.getElementById('btn-12m').classList.toggle('active',m===12);
   drawGraph();
 }
-
 function drawGraph() {
-  const canvas = document.getElementById('weight-chart');
-  const noData = document.getElementById('graph-no-data');
-  const ctx    = canvas.getContext('2d');
-
-  const now    = new Date();
-  const cutoff = new Date(now);
-  cutoff.setMonth(cutoff.getMonth() - graphPeriod);
-  const cutoffStr = cutoff.toISOString().split('T')[0];
-
-  const records = weightRecords
-    .filter(w => w.residentId === kakuninResidentId && w.date >= cutoffStr)
-    .sort((a, b) => a.date.localeCompare(b.date));
-
-  if (!records.length) {
-    canvas.style.display = 'none';
-    noData.style.display = 'block';
-    return;
-  }
-  canvas.style.display = 'block';
-  noData.style.display = 'none';
-
-  canvas.width  = canvas.parentElement.clientWidth || 800;
-  canvas.height = 320;
-  const W   = canvas.width, H = canvas.height;
-  const pad = { top: 30, right: 30, bottom: 70, left: 60 };
-  const gW  = W - pad.left - pad.right;
-  const gH  = H - pad.top  - pad.bottom;
-
-  ctx.clearRect(0, 0, W, H);
-
-  const weights = records.map(r => r.weight);
-  const rawMin  = Math.min(...weights);
-  const rawMax  = Math.max(...weights);
-  const margin  = Math.max((rawMax - rawMin) * 0.15, 1);
-  const minW    = rawMin - margin;
-  const maxW    = rawMax + margin;
-  const range   = maxW - minW;
-
-  // グリッド線
-  ctx.strokeStyle = '#e4ecf5';
-  ctx.lineWidth   = 1;
-  const gridCount = 5;
-  for (let i = 0; i <= gridCount; i++) {
-    const y   = pad.top + gH - (gH / gridCount) * i;
-    const val = (minW + (range / gridCount) * i).toFixed(1);
-    ctx.beginPath();
-    ctx.moveTo(pad.left, y);
-    ctx.lineTo(pad.left + gW, y);
-    ctx.stroke();
-    ctx.fillStyle  = '#888';
-    ctx.font       = '11px Meiryo';
-    ctx.textAlign  = 'right';
-    ctx.fillText(val, pad.left - 6, y + 4);
-  }
-
-  // 軸
-  ctx.strokeStyle = '#b0c8e0';
-  ctx.lineWidth   = 1.5;
-  ctx.beginPath();
-  ctx.moveTo(pad.left, pad.top);
-  ctx.lineTo(pad.left, pad.top + gH);
-  ctx.lineTo(pad.left + gW, pad.top + gH);
-  ctx.stroke();
-
-  // Y軸ラベル
-  ctx.fillStyle  = '#666';
-  ctx.font       = '11px Meiryo';
-  ctx.textAlign  = 'center';
-  ctx.save();
-  ctx.translate(14, pad.top + gH / 2);
-  ctx.rotate(-Math.PI / 2);
-  ctx.fillText('体重（kg）', 0, 0);
-  ctx.restore();
-
-  const n = records.length;
-  const xStep = n > 1 ? gW / (n - 1) : gW / 2;
-
-  const toX = i => pad.left + (n > 1 ? i * xStep : gW / 2);
-  const toY = w => pad.top + gH - ((w - minW) / range) * gH;
-
-  // グラデーション塗りつぶし
-  const grad = ctx.createLinearGradient(0, pad.top, 0, pad.top + gH);
-  grad.addColorStop(0, 'rgba(44,122,184,0.25)');
-  grad.addColorStop(1, 'rgba(44,122,184,0)');
-  ctx.beginPath();
-  records.forEach((r, i) => {
-    const x = toX(i), y = toY(r.weight);
-    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-  });
-  ctx.lineTo(toX(n - 1), pad.top + gH);
-  ctx.lineTo(toX(0),     pad.top + gH);
-  ctx.closePath();
-  ctx.fillStyle = grad;
-  ctx.fill();
-
-  // 折れ線
-  ctx.beginPath();
-  ctx.strokeStyle = '#2c7ab8';
-  ctx.lineWidth   = 2.5;
-  ctx.lineJoin    = 'round';
-  records.forEach((r, i) => {
-    const x = toX(i), y = toY(r.weight);
-    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-  });
-  ctx.stroke();
-
-  // 点・数値・日付ラベル
-  records.forEach((r, i) => {
-    const x = toX(i), y = toY(r.weight);
-
-    // 点
-    ctx.beginPath();
-    ctx.arc(x, y, 5, 0, Math.PI * 2);
-    ctx.fillStyle   = '#fff';
-    ctx.fill();
-    ctx.strokeStyle = '#2c7ab8';
-    ctx.lineWidth   = 2.5;
-    ctx.stroke();
-
-    // 体重数値
-    ctx.fillStyle  = '#1e4a6e';
-    ctx.font       = 'bold 11px Meiryo';
-    ctx.textAlign  = 'center';
-    ctx.fillText(r.weight + 'kg', x, y - 12);
-
-    // 日付ラベル（斜め表示）
-    const [, mm, dd] = r.date.split('-');
-    ctx.fillStyle  = '#666';
-    ctx.font       = '10px Meiryo';
-    ctx.save();
-    ctx.translate(x, pad.top + gH + 10);
-    ctx.rotate(Math.PI / 5);
-    ctx.fillText(parseInt(mm) + '/' + parseInt(dd), 0, 0);
-    ctx.restore();
+  const canvas=document.getElementById('weight-chart'), noData=document.getElementById('graph-no-data'), ctx=canvas.getContext('2d');
+  const now=new Date(), cutoff=new Date(now); cutoff.setMonth(cutoff.getMonth()-graphPeriod);
+  const cutoffStr=cutoff.toISOString().split('T')[0];
+  const records=weightRecords.filter(w=>w.residentId===kakuninResidentId&&w.date>=cutoffStr).sort((a,b)=>a.date.localeCompare(b.date));
+  if (!records.length) { canvas.style.display='none'; noData.style.display='block'; return; }
+  canvas.style.display='block'; noData.style.display='none';
+  canvas.width=canvas.parentElement.clientWidth||800; canvas.height=320;
+  const W=canvas.width,H=canvas.height,pad={top:30,right:30,bottom:70,left:60};
+  const gW=W-pad.left-pad.right,gH=H-pad.top-pad.bottom;
+  ctx.clearRect(0,0,W,H);
+  const weights=records.map(r=>parseFloat(r.weight));
+  const rawMin=Math.min(...weights),rawMax=Math.max(...weights),margin=Math.max((rawMax-rawMin)*0.15,1);
+  const minW=rawMin-margin,maxW=rawMax+margin,range=maxW-minW;
+  ctx.strokeStyle='#e4ecf5'; ctx.lineWidth=1;
+  for(let i=0;i<=5;i++){const y=pad.top+gH-(gH/5)*i;ctx.beginPath();ctx.moveTo(pad.left,y);ctx.lineTo(pad.left+gW,y);ctx.stroke();ctx.fillStyle='#888';ctx.font='11px Meiryo';ctx.textAlign='right';ctx.fillText((minW+(range/5)*i).toFixed(1),pad.left-6,y+4);}
+  ctx.strokeStyle='#b0c8e0';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(pad.left,pad.top);ctx.lineTo(pad.left,pad.top+gH);ctx.lineTo(pad.left+gW,pad.top+gH);ctx.stroke();
+  const n=records.length,xStep=n>1?gW/(n-1):gW/2;
+  const toX=i=>pad.left+(n>1?i*xStep:gW/2), toY=w=>pad.top+gH-((w-minW)/range)*gH;
+  const grad=ctx.createLinearGradient(0,pad.top,0,pad.top+gH);
+  grad.addColorStop(0,'rgba(44,122,184,0.25)'); grad.addColorStop(1,'rgba(44,122,184,0)');
+  ctx.beginPath();records.forEach((r,i)=>{const x=toX(i),y=toY(parseFloat(r.weight));i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
+  ctx.lineTo(toX(n-1),pad.top+gH);ctx.lineTo(toX(0),pad.top+gH);ctx.closePath();ctx.fillStyle=grad;ctx.fill();
+  ctx.beginPath();ctx.strokeStyle='#2c7ab8';ctx.lineWidth=2.5;ctx.lineJoin='round';
+  records.forEach((r,i)=>{const x=toX(i),y=toY(parseFloat(r.weight));i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});ctx.stroke();
+  records.forEach((r,i)=>{
+    const x=toX(i),y=toY(parseFloat(r.weight));
+    ctx.beginPath();ctx.arc(x,y,5,0,Math.PI*2);ctx.fillStyle='#fff';ctx.fill();ctx.strokeStyle='#2c7ab8';ctx.lineWidth=2.5;ctx.stroke();
+    ctx.fillStyle='#1e4a6e';ctx.font='bold 11px Meiryo';ctx.textAlign='center';ctx.fillText(r.weight+'kg',x,y-12);
+    const [,mm,dd]=r.date.split('-');
+    ctx.fillStyle='#666';ctx.font='10px Meiryo';ctx.save();ctx.translate(x,pad.top+gH+10);ctx.rotate(Math.PI/5);ctx.fillText(parseInt(mm)+'/'+parseInt(dd),0,0);ctx.restore();
   });
 }
 
 // ============================================================
-// 初期描画
+// 起動
 // ============================================================
-renderResidentList();
+loadData();
 </script>
 </body>
 </html>
