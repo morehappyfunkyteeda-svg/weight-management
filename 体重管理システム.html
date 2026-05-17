@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>体重管理システム</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Meiryo', 'Yu Gothic', 'Hiragino Sans', sans-serif; background: #eef2f7; color: #333; }
+
+header {
+  background: linear-gradient(135deg, #1e4a6e, #2c7ab8);
+  color: white;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+header .logo { font-size: 1.6rem; }
+header h1 { font-size: 1.25rem; letter-spacing: 0.05em; }
+
+nav {
+  background: #1a3f5e;
+  display: flex;
+  overflow-x: auto;
+  border-bottom: 3px solid #0f2840;
+}
+nav button {
+  color: #8ab8d8;
+  padding: 11px 22px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-family: inherit;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -3px;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+nav button:hover { color: #fff; background: rgba(255,255,255,0.08); }
+nav button.active { color: #fff; border-bottom-color: #5bc4f5; background: rgba(255,255,255,0.12); }
+
+main { max-width: 960px; margin: 24px auto; padding: 0 16px 40px; }
+
+.card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  padding: 22px;
+  margin-bottom: 18px;
+}
+.card h2 {
+  font-size: 1.05rem;
+  color: #1e4a6e;
+  margin-bottom: 18px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #d8e8f5;
+}
+
+.form-row { display: flex; gap: 16px; flex-wrap: wrap; }
+.form-row .form-group { flex: 1; min-width: 200px; }
+
+.form-group { margin-bottom: 14px; }
+.form-group label {
+  display: block;
+  font-size: 0.82rem;
+  color: #555;
+  margin-bottom: 5px;
+  font-weight: bold;
+  letter-spacing: 0.03em;
+}
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1.5px solid #c8d8e8;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  background: #fafcff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #2c7ab8;
+  box-shadow: 0 0 0 3px rgba(44,122,184,0.18);
+  background: #fff;
+}
+.wareki-label {
+  font-size: 0.8rem;
+  color: #2c7ab8;
+  margin-top: 4px;
+  min-height: 18px;
+  font-weight: bold;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 9px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-family: inherit;
+  font-weight: bold;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+.btn-primary { background: #2c7ab8; color: #fff; }
+.btn-primary:hover { background: #1e5f94; }
+.btn-success { background: #27a558; color: #fff; }
+.btn-success:hover { background: #1e8044; }
+.btn-danger { background: #d94040; color: #fff; }
+.btn-danger:hover { background: #b03030; }
+.btn-secondary { background: #6b7a8d; color: #fff; }
+.btn-secondary:hover { background: #525e6d; }
+.btn-warning { background: #e88a00; color: #fff; }
+.btn-warning:hover { background: #c07000; }
+.btn-sm { padding: 5px 13px; font-size: 0.82rem; }
+
+.btn-group { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+
+table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+th {
+  background: #e8f0f8;
+  color: #1e4a6e;
+  padding: 9px 11px;
+  text-align: left;
+  font-weight: bold;
+  font-size: 0.85rem;
+  border-bottom: 2px solid #c0d4e8;
+}
+td { padding: 9px 11px; border-bottom: 1px solid #edf2f7; vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: #f4f8fd; }
+
+.search-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.search-bar input {
+  flex: 1;
+  min-width: 180px;
+  padding: 9px 14px;
+  border: 1.5px solid #c8d8e8;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  background: #fafcff;
+}
+.search-bar input:focus {
+  outline: none;
+  border-color: #2c7ab8;
+  box-shadow: 0 0 0 3px rgba(44,122,184,0.18);
+}
+
+.back-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.back-bar .page-title {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #1e4a6e;
+}
+
+.badge {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  margin-right: 4px;
+}
+.badge-1f { background: #d4edda; color: #155724; }
+.badge-2f { background: #cce5ff; color: #004085; }
+.badge-3f { background: #fff3cd; color: #7d5a00; }
+.badge-4f { background: #f8d7da; color: #721c24; }
+
+.empty-msg {
+  text-align: center;
+  color: #aab;
+  padding: 36px;
+  font-size: 0.95rem;
+}
+
+.diff-up   { color: #d94040; font-weight: bold; }
+.diff-down { color: #27a558; font-weight: bold; }
+.diff-none { color: #aaa; }
+
+.period-btns { display: flex; gap: 8px; margin-bottom: 16px; }
+.period-btn { padding: 6px 18px; border-radius: 20px; font-size: 0.88rem; cursor: pointer; border: 2px solid #2c7ab8; background: #fff; color: #2c7ab8; font-family: inherit; font-weight: bold; transition: all 0.2s; }
+.period-btn.active { background: #2c7ab8; color: #fff; }
+.period-btn:hover { background: #2c7ab8; color: #fff; }
+
+canvas { display: block; max-width: 100%; }
+
+.section { display: none; }
+.section.active { display: block; }
+.subview { display: none; }
+.subview.active { display: block; }
+
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  background: #f0f6ff;
+  padding: 12px 14px;
+  border-radius: 8px;
+}
+.filter-bar label { font-size: 0.85rem; font-weight: bold; color: #1e4a6e; }
+.filter-bar select {
+  padding: 6px 10px;
+  border: 1.5px solid #b0c8e0;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  background: #fff;
+}
+
+.alert {
+  padding: 10px 16px;
+  border-radius: 6px;
+  margin-bottom: 14px;
+  font-size: 0.9rem;
+}
+.alert-success { background: #d4edda; color: #155724; border-left: 4px solid #27a558; }
+.alert-info    { background: #d1ecf1; color: #0c5460; border-left: 4px solid #17a2b8; }
+
+.legend-dot {
+  display: inline-block;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+@media (max-width: 600px) {
+  header h1 { font-size: 1rem; }
+  nav button { padding: 9px 14px; font-size: 0.85rem; }
+  table { font-size: 0.8rem; }
+  td, th { padding: 7px 7px; }
+  .card { padding: 16px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🏥</div>
+  <h1>体重管理システム</h1>
+</header>
+
+<nav>
+  <button class="active" onclick="showSection('kanri')">👤 利用者管理</button>
+  <button onclick="showSection('input')">⚖️ 体重入力</button>
+  <button onclick="showSection('kakunin')">📊 確認・グラフ</button>
+</nav>
+
+<main>
+
+<!-- ========== 管理画面 ========== -->
+<div id="section-kanri" class="section active">
+
+  <div id="kanri-list" class="subview active">
+    <div class="card">
+      <h2>👤 利用者管理</h2>
+      <div class="search-bar">
+        <input type="text" id="kanri-search" placeholder="氏名・ふりがな・居室番号で検索..." oninput="renderResidentList()">
+        <button class="btn btn-primary" onclick="showKanriForm(null)">＋ 新規登録</button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>居室番号</th>
+            <th>氏名（漢字）</th>
+            <th>ふりがな</th>
+            <th>開始日</th>
+            <th>終了日</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody id="resident-list-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="kanri-form" class="subview">
+    <div class="back-bar">
+      <button class="btn btn-secondary btn-sm" onclick="showSubview('kanri','list')">← 一覧に戻る</button>
+      <span class="page-title" id="kanri-form-title">新規登録</span>
+    </div>
+    <div class="card">
+      <div class="form-row">
+        <div class="form-group">
+          <label>居室番号 ＊</label>
+          <select id="f-room">
+            <option value="">-- 選択してください --</option>
+            <optgroup label="１階">
+              <option>101</option><option>102</option><option>103</option>
+              <option>105</option><option>106(1)</option><option>106(2)</option>
+            </optgroup>
+            <optgroup label="２階">
+              <option>201</option><option>202</option><option>203</option><option>205</option>
+              <option>206</option><option>207</option><option>208</option><option>210</option>
+              <option>211</option><option>212</option><option>213</option><option>215</option>
+              <option>216(1)</option><option>216(2)</option>
+            </optgroup>
+            <optgroup label="３階">
+              <option>301</option><option>302</option><option>303</option><option>305</option>
+              <option>306</option><option>307</option><option>308</option><option>310</option>
+              <option>311</option><option>312</option><option>313</option><option>315</option>
+              <option>316(1)</option><option>316(2)</option>
+            </optgroup>
+            <optgroup label="４階">
+              <option>401</option><option>402</option><option>403</option><option>405</option>
+              <option>406</option><option>407</option><option>408</option><option>410</option>
+              <option>411</option><option>412</option><option>413</option><option>415</option>
+              <option>416(1)</option><option>416(2)</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>氏名（漢字） ＊</label>
+          <input type="text" id="f-name" placeholder="例：山田 花子">
+        </div>
+        <div class="form-group">
+          <label>ふりがな ＊</label>
+          <input type="text" id="f-furigana" placeholder="例：やまだ はなこ">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>開始日 ＊</label>
+          <input type="date" id="f-start" oninput="updateWareki('f-start','fw-start')">
+          <div class="wareki-label" id="fw-start"></div>
+        </div>
+        <div class="form-group">
+          <label>終了日（退所時に記入）</label>
+          <input type="date" id="f-end" oninput="updateWareki('f-end','fw-end')">
+          <div class="wareki-label" id="fw-end"></div>
+        </div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-success" onclick="saveResident()">💾 保存する</button>
+        <button class="btn btn-secondary" onclick="showSubview('kanri','list')">キャンセル</button>
+        <button class="btn btn-danger" id="kanri-delete-btn" style="display:none" onclick="deleteResidentCurrent()">🗑 削除する</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ========== 体重入力画面 ========== -->
+<div id="section-input" class="section">
+
+  <div id="input-select" class="subview active">
+    <div class="card">
+      <h2>⚖️ 体重入力 ─ 利用者を選んでください</h2>
+      <div class="search-bar">
+        <input type="text" id="input-search" placeholder="氏名・ふりがな・居室番号で検索..." oninput="renderInputResidentList()">
+      </div>
+      <table>
+        <thead>
+          <tr><th>居室番号</th><th>氏名（漢字）</th><th>ふりがな</th><th></th></tr>
+        </thead>
+        <tbody id="input-resident-list"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="input-form" class="subview">
+    <div class="back-bar">
+      <button class="btn btn-secondary btn-sm" onclick="showSubview('input','select')">← 利用者選択に戻る</button>
+      <span class="page-title" id="input-form-title"></span>
+    </div>
+    <div class="card">
+      <h2>体重を入力する</h2>
+      <div id="input-success-msg" class="alert alert-success" style="display:none">✅ 登録しました！</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>入力日 ＊</label>
+          <input type="date" id="w-date" oninput="updateWareki('w-date','ww-date')">
+          <div class="wareki-label" id="ww-date"></div>
+        </div>
+        <div class="form-group">
+          <label>体重（kg） ＊</label>
+          <input type="number" id="w-weight" step="0.1" min="0" max="300" placeholder="例：52.3">
+        </div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-success" onclick="saveWeight()">💾 登録する</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2>最近の体重記録（直近10件）</h2>
+      <table>
+        <thead>
+          <tr><th>入力日（和暦）</th><th>体重 (kg)</th><th>操作</th></tr>
+        </thead>
+        <tbody id="recent-weights"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- ========== 確認・グラフ画面 ========== -->
+<div id="section-kakunin" class="section">
+
+  <div id="kakunin-select" class="subview active">
+    <div class="card">
+      <h2>📊 確認・グラフ ─ 利用者を選んでください</h2>
+      <div class="search-bar">
+        <input type="text" id="kakunin-search" placeholder="氏名・ふりがな・居室番号で検索..." oninput="renderKakuninResidentList()">
+      </div>
+      <table>
+        <thead>
+          <tr><th>居室番号</th><th>氏名（漢字）</th><th>ふりがな</th><th></th></tr>
+        </thead>
+        <tbody id="kakunin-resident-list"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="kakunin-detail" class="subview">
+    <div class="back-bar">
+      <button class="btn btn-secondary btn-sm" onclick="showSubview('kakunin','select')">← 利用者選択に戻る</button>
+      <button class="btn btn-warning btn-sm" onclick="showKakuninGraph()">📈 グラフを見る</button>
+      <span class="page-title" id="kakunin-detail-title"></span>
+    </div>
+    <div class="card">
+      <h2>体重記録の確認</h2>
+      <div class="filter-bar">
+        <label>表示月：</label>
+        <select id="k-year" onchange="renderWeightDetail()"></select>
+        <select id="k-month" onchange="renderWeightDetail()"></select>
+        <button class="btn btn-secondary btn-sm" onclick="showAllWeights()">全期間表示</button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>入力日（和暦）</th>
+            <th>体重 (kg)</th>
+            <th>前月比</th>
+            <th>翌月比</th>
+          </tr>
+        </thead>
+        <tbody id="weight-detail-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="kakunin-graph" class="subview">
+    <div class="back-bar">
+      <button class="btn btn-secondary btn-sm" onclick="showSubview('kakunin','detail')">← 一覧に戻る</button>
+      <span class="page-title" id="graph-title"></span>
+    </div>
+    <div class="card">
+      <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
+        <div class="period-btns">
+          <button class="period-btn active" id="btn-6m" onclick="setGraphPeriod(6)">過去6ヶ月</button>
+          <button class="period-btn" id="btn-12m" onclick="setGraphPeriod(12)">過去1年</button>
+        </div>
+        <div style="font-size:0.8rem;color:#888;">
+          <span class="legend-dot" style="background:#2c7ab8;"></span>体重 (kg)
+        </div>
+      </div>
+      <div style="position:relative;">
+        <canvas id="weight-chart"></canvas>
+        <div id="graph-no-data" class="empty-msg" style="display:none;">この期間のデータがありません</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</main>
+
+<script>
+// ============================================================
+// データ管理（localStorage）
+// ============================================================
+let residents     = JSON.parse(localStorage.getItem('wm_residents')     || '[]');
+let weightRecords = JSON.parse(localStorage.getItem('wm_weightRecords') || '[]');
+
+function saveData() {
+  localStorage.setItem('wm_residents',     JSON.stringify(residents));
+  localStorage.setItem('wm_weightRecords', JSON.stringify(weightRecords));
+}
+function genId() {
+  return Date.now().toString(36) + Math.random().toString(36).substr(2, 6);
+}
+
+// ============================================================
+// 和暦変換
+// ============================================================
+function toWareki(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr + 'T00:00:00');
+  const y = d.getFullYear(), m = d.getMonth() + 1, day = d.getDate();
+  if (d >= new Date('2019-05-01')) {
+    const wy = y - 2018;
+    return '令和' + (wy === 1 ? '元' : wy) + '年' + m + '月' + day + '日';
+  }
+  if (d >= new Date('1989-01-08')) {
+    const wy = y - 1988;
+    return '平成' + (wy === 1 ? '元' : wy) + '年' + m + '月' + day + '日';
+  }
+  if (d >= new Date('1926-12-25')) {
+    const wy = y - 1925;
+    return '昭和' + (wy === 1 ? '元' : wy) + '年' + m + '月' + day + '日';
+  }
+  return y + '年' + m + '月' + day + '日';
+}
+
+function updateWareki(inputId, labelId) {
+  const val = document.getElementById(inputId).value;
+  const el  = document.getElementById(labelId);
+  el.textContent = val ? '（' + toWareki(val) + '）' : '';
+}
+
+// ============================================================
+// 画面・サブビュー切り替え
+// ============================================================
+const SECTIONS = ['kanri', 'input', 'kakunin'];
+
+function showSection(name) {
+  SECTIONS.forEach(s => {
+    document.getElementById('section-' + s).classList.toggle('active', s === name);
+  });
+  document.querySelectorAll('nav button').forEach((btn, i) => {
+    btn.classList.toggle('active', SECTIONS[i] === name);
+  });
+  if (name === 'kanri')   renderResidentList();
+  if (name === 'input')   { showSubview('input','select'); renderInputResidentList(); }
+  if (name === 'kakunin') { showSubview('kakunin','select'); renderKakuninResidentList(); }
+}
+
+function showSubview(section, view) {
+  const sec = document.getElementById('section-' + section);
+  sec.querySelectorAll('.subview').forEach(sv => {
+    sv.classList.toggle('active', sv.id === section + '-' + view);
+  });
+}
+
+// ============================================================
+// 居室番号バッジ
+// ============================================================
+function floorBadge(room) {
+  const n = parseInt(room);
+  if (n < 200) return '<span class="badge badge-1f">１階</span>';
+  if (n < 300) return '<span class="badge badge-2f">２階</span>';
+  if (n < 400) return '<span class="badge badge-3f">３階</span>';
+  return '<span class="badge badge-4f">４階</span>';
+}
+
+// ============================================================
+// 管理画面
+// ============================================================
+let editingId = null;
+
+function renderResidentList() {
+  const q    = (document.getElementById('kanri-search').value || '').toLowerCase();
+  const body = document.getElementById('resident-list-body');
+  let list   = residents.filter(r =>
+    !q ||
+    (r.name     || '').toLowerCase().includes(q) ||
+    (r.furigana || '').toLowerCase().includes(q) ||
+    (r.room     || '').toLowerCase().includes(q)
+  );
+  list.sort((a, b) => (a.room || '').localeCompare(b.room || '', 'ja'));
+
+  if (!list.length) {
+    body.innerHTML = '<tr><td colspan="6" class="empty-msg">利用者が登録されていません</td></tr>';
+    return;
+  }
+  body.innerHTML = list.map(r => `
+    <tr>
+      <td>${floorBadge(r.room)}&nbsp;${r.room}</td>
+      <td><strong>${r.name}</strong></td>
+      <td>${r.furigana}</td>
+      <td style="font-size:0.85rem;">${toWareki(r.startDate)}</td>
+      <td style="font-size:0.85rem;">${r.endDate ? toWareki(r.endDate) : '─'}</td>
+      <td>
+        <button class="btn btn-primary btn-sm" onclick="showKanriForm('${r.id}')">編集</button>
+        &nbsp;
+        <button class="btn btn-danger btn-sm" onclick="deleteResident('${r.id}')">削除</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function showKanriForm(id) {
+  editingId = id;
+  document.getElementById('kanri-form-title').textContent = id ? '利用者情報を編集' : '新規登録';
+  document.getElementById('kanri-delete-btn').style.display = id ? 'inline-flex' : 'none';
+
+  if (id) {
+    const r = residents.find(x => x.id === id);
+    document.getElementById('f-room').value     = r.room      || '';
+    document.getElementById('f-name').value     = r.name      || '';
+    document.getElementById('f-furigana').value = r.furigana  || '';
+    document.getElementById('f-start').value    = r.startDate || '';
+    document.getElementById('f-end').value      = r.endDate   || '';
+    updateWareki('f-start', 'fw-start');
+    updateWareki('f-end',   'fw-end');
+  } else {
+    ['f-room','f-name','f-furigana','f-start','f-end'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el.tagName === 'SELECT') el.selectedIndex = 0;
+      else el.value = '';
+    });
+    document.getElementById('fw-start').textContent = '';
+    document.getElementById('fw-end').textContent   = '';
+  }
+  showSubview('kanri', 'form');
+}
+
+function saveResident() {
+  const room      = document.getElementById('f-room').value;
+  const name      = document.getElementById('f-name').value.trim();
+  const furigana  = document.getElementById('f-furigana').value.trim();
+  const startDate = document.getElementById('f-start').value;
+  const endDate   = document.getElementById('f-end').value;
+
+  if (!room || !name || !furigana || !startDate) {
+    alert('居室番号・氏名（漢字）・ふりがな・開始日は必須項目です。');
+    return;
+  }
+  if (editingId) {
+    const idx = residents.findIndex(r => r.id === editingId);
+    residents[idx] = { ...residents[idx], room, name, furigana, startDate, endDate };
+  } else {
+    residents.push({ id: genId(), room, name, furigana, startDate, endDate });
+  }
+  saveData();
+  showSubview('kanri', 'list');
+  renderResidentList();
+}
+
+function deleteResidentCurrent() {
+  if (editingId) deleteResident(editingId, true);
+}
+
+function deleteResident(id, fromForm) {
+  const r = residents.find(x => x.id === id);
+  if (!confirm('「' + r.name + '」さんのデータを削除しますか？\n体重記録もすべて削除されます。')) return;
+  residents     = residents.filter(x => x.id !== id);
+  weightRecords = weightRecords.filter(x => x.residentId !== id);
+  saveData();
+  showSubview('kanri', 'list');
+  renderResidentList();
+}
+
+// ============================================================
+// 体重入力画面
+// ============================================================
+let inputResidentId = null;
+
+function renderInputResidentList() {
+  const q    = (document.getElementById('input-search').value || '').toLowerCase();
+  const body = document.getElementById('input-resident-list');
+  let list   = residents.filter(r =>
+    !q ||
+    (r.name     || '').toLowerCase().includes(q) ||
+    (r.furigana || '').toLowerCase().includes(q) ||
+    (r.room     || '').toLowerCase().includes(q)
+  );
+  list.sort((a, b) => (a.room || '').localeCompare(b.room || '', 'ja'));
+
+  if (!list.length) {
+    body.innerHTML = '<tr><td colspan="4" class="empty-msg">利用者が登録されていません</td></tr>';
+    return;
+  }
+  body.innerHTML = list.map(r => `
+    <tr>
+      <td>${floorBadge(r.room)}&nbsp;${r.room}</td>
+      <td><strong>${r.name}</strong></td>
+      <td>${r.furigana}</td>
+      <td><button class="btn btn-primary btn-sm" onclick="selectResidentForInput('${r.id}')">選択</button></td>
+    </tr>
+  `).join('');
+}
+
+function selectResidentForInput(id) {
+  inputResidentId = id;
+  const r = residents.find(x => x.id === id);
+  document.getElementById('input-form-title').textContent =
+    floorBadge(r.room) + ' ' + r.room + '　' + r.name + ' さん';
+
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('w-date').value   = today;
+  document.getElementById('w-weight').value = '';
+  updateWareki('w-date', 'ww-date');
+  document.getElementById('input-success-msg').style.display = 'none';
+
+  renderRecentWeights();
+  showSubview('input', 'form');
+}
+
+function renderRecentWeights() {
+  const records = weightRecords
+    .filter(w => w.residentId === inputResidentId)
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .slice(0, 10);
+  const body = document.getElementById('recent-weights');
+
+  if (!records.length) {
+    body.innerHTML = '<tr><td colspan="3" class="empty-msg">記録がありません</td></tr>';
+    return;
+  }
+  body.innerHTML = records.map(w => `
+    <tr>
+      <td>${toWareki(w.date)}</td>
+      <td><strong>${w.weight}</strong> kg</td>
+      <td><button class="btn btn-danger btn-sm" onclick="deleteWeight('${w.id}')">削除</button></td>
+    </tr>
+  `).join('');
+}
+
+function saveWeight() {
+  const date   = document.getElementById('w-date').value;
+  const weight = parseFloat(document.getElementById('w-weight').value);
+
+  if (!date || isNaN(weight) || weight <= 0) {
+    alert('入力日と体重（kg）を正しく入力してください。');
+    return;
+  }
+  weightRecords.push({ id: genId(), residentId: inputResidentId, date, weight });
+  saveData();
+  document.getElementById('w-weight').value = '';
+
+  const msg = document.getElementById('input-success-msg');
+  msg.style.display = 'block';
+  setTimeout(() => { msg.style.display = 'none'; }, 3000);
+
+  renderRecentWeights();
+}
+
+function deleteWeight(id) {
+  if (!confirm('この記録を削除しますか？')) return;
+  weightRecords = weightRecords.filter(w => w.id !== id);
+  saveData();
+  renderRecentWeights();
+}
+
+// ============================================================
+// 確認画面
+// ============================================================
+let kakuninResidentId = null;
+let showAll = false;
+
+function renderKakuninResidentList() {
+  const q    = (document.getElementById('kakunin-search').value || '').toLowerCase();
+  const body = document.getElementById('kakunin-resident-list');
+  let list   = residents.filter(r =>
+    !q ||
+    (r.name     || '').toLowerCase().includes(q) ||
+    (r.furigana || '').toLowerCase().includes(q) ||
+    (r.room     || '').toLowerCase().includes(q)
+  );
+  list.sort((a, b) => (a.room || '').localeCompare(b.room || '', 'ja'));
+
+  if (!list.length) {
+    body.innerHTML = '<tr><td colspan="4" class="empty-msg">利用者が登録されていません</td></tr>';
+    return;
+  }
+  body.innerHTML = list.map(r => `
+    <tr>
+      <td>${floorBadge(r.room)}&nbsp;${r.room}</td>
+      <td><strong>${r.name}</strong></td>
+      <td>${r.furigana}</td>
+      <td><button class="btn btn-warning btn-sm" onclick="selectResidentForKakunin('${r.id}')">確認する</button></td>
+    </tr>
+  `).join('');
+}
+
+function selectResidentForKakunin(id) {
+  kakuninResidentId = id;
+  const r = residents.find(x => x.id === id);
+  const label = r.room + '　' + r.name + ' さん';
+  document.getElementById('kakunin-detail-title').textContent = label;
+  document.getElementById('graph-title').textContent          = '📈 ' + label;
+
+  showAll = false;
+  initMonthFilter();
+  renderWeightDetail();
+  showSubview('kakunin', 'detail');
+}
+
+function initMonthFilter() {
+  const now  = new Date();
+  const ySel = document.getElementById('k-year');
+  const mSel = document.getElementById('k-month');
+
+  ySel.innerHTML = '';
+  for (let y = now.getFullYear(); y >= now.getFullYear() - 5; y--) {
+    ySel.innerHTML += '<option value="' + y + '">' + y + '年</option>';
+  }
+  mSel.innerHTML = '';
+  for (let m = 1; m <= 12; m++) {
+    mSel.innerHTML += '<option value="' + m + '"' + (m === now.getMonth() + 1 ? ' selected' : '') + '>' + m + '月</option>';
+  }
+}
+
+function showAllWeights() {
+  showAll = true;
+  renderWeightDetail();
+}
+
+function renderWeightDetail() {
+  if (!showAll) {
+    const year  = parseInt(document.getElementById('k-year').value);
+    const month = parseInt(document.getElementById('k-month').value);
+    _renderDetail(year, month);
+  } else {
+    _renderDetail(null, null);
+  }
+}
+
+function _renderDetail(filterYear, filterMonth) {
+  // 全記録（日付順）
+  const allRecords = weightRecords
+    .filter(w => w.residentId === kakuninResidentId)
+    .sort((a, b) => a.date.localeCompare(b.date));
+
+  // 月ごとの平均体重マップ（前月比・翌月比計算用）
+  const monthlyMap = {};
+  allRecords.forEach(w => {
+    const [y, m] = w.date.split('-').map(Number);
+    const key = y + '-' + String(m).padStart(2, '0');
+    if (!monthlyMap[key]) monthlyMap[key] = [];
+    monthlyMap[key].push(w.weight);
+  });
+  const monthlyAvg = {};
+  Object.keys(monthlyMap).forEach(k => {
+    const vals = monthlyMap[k];
+    monthlyAvg[k] = vals.reduce((s, v) => s + v, 0) / vals.length;
+  });
+
+  // 表示レコードを絞り込む
+  const displayed = filterYear !== null
+    ? allRecords.filter(w => {
+        const [y, m] = w.date.split('-').map(Number);
+        return y === filterYear && m === filterMonth;
+      })
+    : allRecords;
+
+  const body = document.getElementById('weight-detail-body');
+  if (!displayed.length) {
+    body.innerHTML = '<tr><td colspan="4" class="empty-msg">この期間のデータがありません</td></tr>';
+    return;
+  }
+
+  body.innerHTML = displayed.map(w => {
+    const [y, m] = w.date.split('-').map(Number);
+    const curKey  = y + '-' + String(m).padStart(2, '0');
+    const pm = m === 1 ? 12 : m - 1;
+    const py = m === 1 ? y - 1 : y;
+    const prevKey = py + '-' + String(pm).padStart(2, '0');
+    const nm = m === 12 ? 1 : m + 1;
+    const ny = m === 12 ? y + 1 : y;
+    const nextKey = ny + '-' + String(nm).padStart(2, '0');
+
+    const curAvg  = monthlyAvg[curKey];
+    const prevAvg = monthlyAvg[prevKey];
+    const nextAvg = monthlyAvg[nextKey];
+
+    const fmtDiff = (from, to) => {
+      if (from === undefined || to === undefined) return '<span class="diff-none">─</span>';
+      const d = (to - from).toFixed(1);
+      const cls = d > 0 ? 'diff-up' : d < 0 ? 'diff-down' : 'diff-none';
+      return '<span class="' + cls + '">' + (d > 0 ? '+' : '') + d + ' kg</span>';
+    };
+
+    return `
+      <tr>
+        <td>${toWareki(w.date)}</td>
+        <td><strong>${w.weight}</strong> kg</td>
+        <td>${fmtDiff(prevAvg, curAvg)}</td>
+        <td>${fmtDiff(curAvg, nextAvg)}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// ============================================================
+// グラフ
+// ============================================================
+let graphPeriod = 6;
+
+function showKakuninGraph() {
+  showSubview('kakunin', 'graph');
+  setTimeout(drawGraph, 50);
+}
+
+function setGraphPeriod(months) {
+  graphPeriod = months;
+  document.getElementById('btn-6m').classList.toggle('active', months === 6);
+  document.getElementById('btn-12m').classList.toggle('active', months === 12);
+  drawGraph();
+}
+
+function drawGraph() {
+  const canvas = document.getElementById('weight-chart');
+  const noData = document.getElementById('graph-no-data');
+  const ctx    = canvas.getContext('2d');
+
+  const now    = new Date();
+  const cutoff = new Date(now);
+  cutoff.setMonth(cutoff.getMonth() - graphPeriod);
+  const cutoffStr = cutoff.toISOString().split('T')[0];
+
+  const records = weightRecords
+    .filter(w => w.residentId === kakuninResidentId && w.date >= cutoffStr)
+    .sort((a, b) => a.date.localeCompare(b.date));
+
+  if (!records.length) {
+    canvas.style.display = 'none';
+    noData.style.display = 'block';
+    return;
+  }
+  canvas.style.display = 'block';
+  noData.style.display = 'none';
+
+  canvas.width  = canvas.parentElement.clientWidth || 800;
+  canvas.height = 320;
+  const W   = canvas.width, H = canvas.height;
+  const pad = { top: 30, right: 30, bottom: 70, left: 60 };
+  const gW  = W - pad.left - pad.right;
+  const gH  = H - pad.top  - pad.bottom;
+
+  ctx.clearRect(0, 0, W, H);
+
+  const weights = records.map(r => r.weight);
+  const rawMin  = Math.min(...weights);
+  const rawMax  = Math.max(...weights);
+  const margin  = Math.max((rawMax - rawMin) * 0.15, 1);
+  const minW    = rawMin - margin;
+  const maxW    = rawMax + margin;
+  const range   = maxW - minW;
+
+  // グリッド線
+  ctx.strokeStyle = '#e4ecf5';
+  ctx.lineWidth   = 1;
+  const gridCount = 5;
+  for (let i = 0; i <= gridCount; i++) {
+    const y   = pad.top + gH - (gH / gridCount) * i;
+    const val = (minW + (range / gridCount) * i).toFixed(1);
+    ctx.beginPath();
+    ctx.moveTo(pad.left, y);
+    ctx.lineTo(pad.left + gW, y);
+    ctx.stroke();
+    ctx.fillStyle  = '#888';
+    ctx.font       = '11px Meiryo';
+    ctx.textAlign  = 'right';
+    ctx.fillText(val, pad.left - 6, y + 4);
+  }
+
+  // 軸
+  ctx.strokeStyle = '#b0c8e0';
+  ctx.lineWidth   = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(pad.left, pad.top);
+  ctx.lineTo(pad.left, pad.top + gH);
+  ctx.lineTo(pad.left + gW, pad.top + gH);
+  ctx.stroke();
+
+  // Y軸ラベル
+  ctx.fillStyle  = '#666';
+  ctx.font       = '11px Meiryo';
+  ctx.textAlign  = 'center';
+  ctx.save();
+  ctx.translate(14, pad.top + gH / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.fillText('体重（kg）', 0, 0);
+  ctx.restore();
+
+  const n = records.length;
+  const xStep = n > 1 ? gW / (n - 1) : gW / 2;
+
+  const toX = i => pad.left + (n > 1 ? i * xStep : gW / 2);
+  const toY = w => pad.top + gH - ((w - minW) / range) * gH;
+
+  // グラデーション塗りつぶし
+  const grad = ctx.createLinearGradient(0, pad.top, 0, pad.top + gH);
+  grad.addColorStop(0, 'rgba(44,122,184,0.25)');
+  grad.addColorStop(1, 'rgba(44,122,184,0)');
+  ctx.beginPath();
+  records.forEach((r, i) => {
+    const x = toX(i), y = toY(r.weight);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.lineTo(toX(n - 1), pad.top + gH);
+  ctx.lineTo(toX(0),     pad.top + gH);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // 折れ線
+  ctx.beginPath();
+  ctx.strokeStyle = '#2c7ab8';
+  ctx.lineWidth   = 2.5;
+  ctx.lineJoin    = 'round';
+  records.forEach((r, i) => {
+    const x = toX(i), y = toY(r.weight);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+
+  // 点・数値・日付ラベル
+  records.forEach((r, i) => {
+    const x = toX(i), y = toY(r.weight);
+
+    // 点
+    ctx.beginPath();
+    ctx.arc(x, y, 5, 0, Math.PI * 2);
+    ctx.fillStyle   = '#fff';
+    ctx.fill();
+    ctx.strokeStyle = '#2c7ab8';
+    ctx.lineWidth   = 2.5;
+    ctx.stroke();
+
+    // 体重数値
+    ctx.fillStyle  = '#1e4a6e';
+    ctx.font       = 'bold 11px Meiryo';
+    ctx.textAlign  = 'center';
+    ctx.fillText(r.weight + 'kg', x, y - 12);
+
+    // 日付ラベル（斜め表示）
+    const [, mm, dd] = r.date.split('-');
+    ctx.fillStyle  = '#666';
+    ctx.font       = '10px Meiryo';
+    ctx.save();
+    ctx.translate(x, pad.top + gH + 10);
+    ctx.rotate(Math.PI / 5);
+    ctx.fillText(parseInt(mm) + '/' + parseInt(dd), 0, 0);
+    ctx.restore();
+  });
+}
+
+// ============================================================
+// 初期描画
+// ============================================================
+renderResidentList();
+</script>
+</body>
+</html>
